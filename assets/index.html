@@ -9,6 +9,13 @@
 <body>
     <h1>Hello WebAssembly</h1>
     <button id="get-html">Get HTML</button>
+    <h1>Pomodoro Timer</h1>
+    <p>Remaining Time: <span id="remainingTime">-</span> seconds</p>
+    <input type="number" id="duration" placeholder="Enter duration in seconds">
+    <button onclick="startTimer()">Start</button>
+    <button onclick="pauseTimer()">Pause</button>
+    <button onclick="resumeTimer()">Resume</button>
+    <button onclick="resetTimer()">Reset</button>
     <script src="wasm_exec.js"></script>
     <script src="script.js"></script>
 </body>
