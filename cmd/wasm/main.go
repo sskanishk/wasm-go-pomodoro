@@ -1,26 +1,3 @@
-// package main
-
-// import (
-// 	"fmt"
-// 	"syscall/js"
-// )
-
-// var htmlString = `<h4>Hello, I'm an HTML snippet from Go!</h4>`
-// func GetHtml() js.Func {
-// 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-// 		return htmlString
-// 	})
-// }
-
-// func main() {
-
-// 	ch := make(chan struct{}, 0)
-// 	fmt.Printf("Hello Web Assembly from Go!\n")
-
-// 	js.Global().Set("getHtml", GetHtml())
-// 	<-ch
-// }
-
 package main
 
 import (
@@ -46,8 +23,6 @@ func AddMinutes() js.Func {
 		fmt.Println("timer 1", timerDuration)
 		if timerDuration < time.Duration(60)*time.Second {
 			timerDuration = timerDuration + time.Second
-			// fmt.Println("timer 2", timerDuration)
-			// js.Global().Call("updateMinutes", timerDuration.Seconds())
 			SendMinutesTime()
 		}
 		return nil
@@ -58,7 +33,6 @@ func SubMinutes() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		if timerDuration > time.Duration(1)*time.Second {
 			timerDuration = timerDuration - time.Second
-			// js.Global().Call("updateMinutes", timerDuration.Seconds())
 			SendMinutesTime()
 		}
 		return nil
@@ -77,14 +51,10 @@ func StartTimer() js.Func {
 		}
 
 		if timerRunning {
-			// Timer is already running, do nothing
 			return nil
 		}
 
-		// Set the timer duration to 25 minutes
-		timerDuration = time.Duration(durationInt) * time.Second
-
-		// timerDuration = 25 * time.Minute
+		timerDuration = time.Duration(durationInt) * time.Minute
 		timerRunning = true
 
 		// Start the timer in a separate goroutine
@@ -93,6 +63,45 @@ func StartTimer() js.Func {
 		return nil
 
 	})
+}
+
+func PauseTimer() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if !timerRunning {
+			return nil
+		}
+
+		timerRunning = false
+		SendRemainingTime()
+		return nil
+	})
+}
+
+func ResumeTimer() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if timerRunning {
+			return nil
+		}
+
+		timerRunning = true
+		go RunTimer()
+		return nil
+	})
+}
+
+func ResetTimer() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		timerRunning = false
+		timerDuration = 0
+		SendRemainingTime()
+		return nil
+	})
+}
+
+func formatDuration(d time.Duration) string {
+	minutes := int(d.Minutes())
+	seconds := int(d.Seconds()) % 60
+	return fmt.Sprintf("%02d:%02d", minutes, seconds)
 }
 
 func RunTimer() {
@@ -124,19 +133,17 @@ func RunTimer() {
 	// }
 
 	for timerRunning && timerDuration > 0 {
-		// Send the remaining time to the UI
 		SendRemainingTime()
 
-		fmt.Println("-----------------------------------------------")
-		fmt.Println("timerDuration 1:", timerDuration)
-		fmt.Println("-----------------------------------------------")
+		// fmt.Println("-----------------------------------------------")
+		// fmt.Println("timerDuration 1:", timerDuration)
+		// fmt.Println("-----------------------------------------------")
 
-		// Decrement the timer duration by 1 second
 		timerDuration -= 1 * time.Second
 
-		fmt.Println("-----------------------------------------------")
-		fmt.Println("timerDuration 2:", timerDuration)
-		fmt.Println("-----------------------------------------------")
+		// fmt.Println("-----------------------------------------------")
+		// fmt.Println("timerDuration 2:", timerDuration)
+		// fmt.Println("-----------------------------------------------")
 
 		time.Sleep(1 * time.Second)
 	}
@@ -145,47 +152,10 @@ func RunTimer() {
 		timerRunning = false
 		SendRemainingTime()
 	}
-
-}
-
-func PauseTimer() js.Func {
-	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		if !timerRunning {
-			// Timer is not running, do nothing
-			return ""
-		}
-
-		timerRunning = false
-		SendRemainingTime()
-		return ""
-	})
-}
-
-func ResumeTimer() js.Func {
-	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		if timerRunning {
-			// Timer is already running, do nothing
-			return ""
-		}
-
-		timerRunning = true
-		go RunTimer()
-		return ""
-	})
-}
-
-func ResetTimer() js.Func {
-	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		timerRunning = false
-		timerDuration = 0
-		SendRemainingTime()
-		// SendResetMinutes()
-		return ""
-	})
 }
 
 func SendRemainingTime() {
-	js.Global().Call("updateRemainingTime", timerDuration.Seconds())
+	js.Global().Call("updateRemainingTime", formatDuration(timerDuration))
 }
 
 func SendMinutesTime() {
@@ -196,16 +166,6 @@ func SendResetMinutes() {
 	js.Global().Call("resetMinutes", timerDuration.Seconds())
 }
 
-// func sendJSONResponse(data interface{}) string {
-// 	return toJSON(data)
-// }
-
-// func toJSON(data interface{}) string {
-// 	json, _ := json.Marshal(data)
-// 	println("JSON in toJson ", json, string(json))
-// 	return string(json)
-// }
-
 func RegisterCallbacks() {
 	js.Global().Set("startTimer", StartTimer())
 	js.Global().Set("pauseTimer", PauseTimer())
@@ -213,11 +173,11 @@ func RegisterCallbacks() {
 	js.Global().Set("resetTimer", ResetTimer())
 	js.Global().Set("addMinutes", AddMinutes())
 	js.Global().Set("subMinutes", SubMinutes())
+	js.Global().Set("getHtml", GetHtml())
 }
 
 func main() {
 	c := make(chan struct{}, 0)
 	RegisterCallbacks()
-	js.Global().Set("getHtml", GetHtml())
 	<-c
 }
