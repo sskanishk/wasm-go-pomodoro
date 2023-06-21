@@ -11,7 +11,12 @@
     <button id="get-html">Get HTML</button>
     <h1>Pomodoro Timer</h1>
     <p>Remaining Time: <span id="remainingTime">-</span> seconds</p>
-    <input type="number" id="duration" placeholder="Enter duration in seconds">
+    <div>
+        <button onclick="subMinutes()">Sub</button>
+        <!-- <input type="number" id="duration" placeholder="Enter duration in seconds"> -->
+        <span id="duration" >0</span>
+        <button onclick="addMinutes()">Add</button>
+    </div>
     <button onclick="startTimer()">Start</button>
     <button onclick="pauseTimer()">Pause</button>
     <button onclick="resumeTimer()">Resume</button>
