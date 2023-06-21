@@ -7,5 +7,5 @@ import (
 
 func main() {
 
-	log.Fatal(http.ListenAndServe(":9000", http.FileServer(http.Dir("../../assets"))))
+	log.Fatal(http.ListenAndServe(":9000", http.FileServer(http.Dir("../../web"))))
 }

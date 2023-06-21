@@ -1,3 +1,3 @@
-module github.com/sskanishk/study-pack
+module github.com/sskanishk/wasm-go-pomodoro
 
 go 1.20
