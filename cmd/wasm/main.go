@@ -41,10 +41,32 @@ func GetHtml() js.Func {
 	})
 }
 
+func AddMinutes() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		// fmt.Println("timer 1", timerDuration)
+		if timerDuration < time.Duration(60)*time.Second {
+			timerDuration = timerDuration + time.Second
+			// fmt.Println("timer 2", timerDuration)
+			js.Global().Call("updateMinutes", timerDuration.Seconds())
+		}
+		return nil
+	})
+}
+
+func SubMinutes() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if timerDuration > time.Duration(1)*time.Second {
+			timerDuration = timerDuration - time.Second
+			js.Global().Call("updateMinutes", timerDuration.Seconds())
+		}
+		return nil
+	})
+}
+
 func StartTimer() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 
-		inputDuration := js.Global().Get("document").Call("getElementById", "duration").Get("value").String()
+		inputDuration := js.Global().Get("document").Call("getElementById", "duration").Get("innerText").String()
 		durationInt, err := strconv.Atoi(inputDuration)
 		if err != nil {
 			fmt.Println("Invalid duration:", inputDuration)
@@ -58,6 +80,7 @@ func StartTimer() js.Func {
 
 		// Set the timer duration to 25 minutes
 		timerDuration = time.Duration(durationInt) * time.Second
+
 		// timerDuration = 25 * time.Minute
 		timerRunning = true
 
@@ -70,27 +93,56 @@ func StartTimer() js.Func {
 }
 
 func RunTimer() {
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
+	// ticker := time.NewTicker(time.Second)
+	// defer ticker.Stop()
 
-	for range ticker.C {
-		if !timerRunning {
-			// Timer paused or stopped, exit the goroutine
-			return
-		}
+	// for range ticker.C {
+	// 	if !timerRunning {
+	// 		// Timer paused or stopped, exit the goroutine
+	// 		return
+	// 	}
 
+	// 	// Send the remaining time to the UI
+	// 	SendRemainingTime()
+
+	// 	fmt.Println("-----------------------------------------------")
+	// 	fmt.Println("timerDuration 1", timerDuration)
+	// 	fmt.Println("time.Second", time.Second)
+	// 	timerDuration -= 1 * time.Second
+	// 	fmt.Println("timerDuration 2", timerDuration)
+	// 	fmt.Println("-----------------------------------------------")
+
+	// 	if timerDuration <= 0 {
+	// 		// Timer completed, stop the timer
+	// 		timerRunning = false
+	// 		SendRemainingTime()
+	// 		return
+	// 	}
+	// }
+
+	for timerRunning && timerDuration >= 0 {
 		// Send the remaining time to the UI
 		SendRemainingTime()
 
-		// Decrease the remaining time by one second
-		timerDuration -= time.Second
+		fmt.Println("-----------------------------------------------")
+		fmt.Println("timerDuration 1:", timerDuration)
+		fmt.Println("-----------------------------------------------")
 
-		if timerDuration <= 0 {
-			// Timer completed, stop the timer
-			timerRunning = false
-			SendRemainingTime()
-			return
-		}
+		// Decrement the timer duration by 1 second
+		timerDuration -= 1 * time.Second
+
+		fmt.Println("-----------------------------------------------")
+		fmt.Println("timerDuration 2:", timerDuration)
+		fmt.Println("-----------------------------------------------")
+
+		// js.Global().Call("updateMinutes", timerDuration.Seconds())
+		time.Sleep(1 * time.Second)
+	}
+
+	if !timerRunning {
+		// Timer paused or stopped
+		fmt.Println("Its herer")
+		SendRemainingTime()
 	}
 
 }
@@ -149,6 +201,8 @@ func RegisterCallbacks() {
 	js.Global().Set("pauseTimer", PauseTimer())
 	js.Global().Set("resumeTimer", ResumeTimer())
 	js.Global().Set("resetTimer", ResetTimer())
+	js.Global().Set("addMinutes", AddMinutes())
+	js.Global().Set("subMinutes", SubMinutes())
 }
 
 func main() {
