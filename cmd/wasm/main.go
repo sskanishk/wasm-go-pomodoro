@@ -43,11 +43,12 @@ func GetHtml() js.Func {
 
 func AddMinutes() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		// fmt.Println("timer 1", timerDuration)
+		fmt.Println("timer 1", timerDuration)
 		if timerDuration < time.Duration(60)*time.Second {
 			timerDuration = timerDuration + time.Second
 			// fmt.Println("timer 2", timerDuration)
-			js.Global().Call("updateMinutes", timerDuration.Seconds())
+			// js.Global().Call("updateMinutes", timerDuration.Seconds())
+			SendMinutesTime()
 		}
 		return nil
 	})
@@ -57,7 +58,8 @@ func SubMinutes() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		if timerDuration > time.Duration(1)*time.Second {
 			timerDuration = timerDuration - time.Second
-			js.Global().Call("updateMinutes", timerDuration.Seconds())
+			// js.Global().Call("updateMinutes", timerDuration.Seconds())
+			SendMinutesTime()
 		}
 		return nil
 	})
@@ -65,6 +67,7 @@ func SubMinutes() js.Func {
 
 func StartTimer() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		fmt.Println("starttimer ", timerDuration, timerRunning)
 
 		inputDuration := js.Global().Get("document").Call("getElementById", "duration").Get("innerText").String()
 		durationInt, err := strconv.Atoi(inputDuration)
@@ -120,7 +123,7 @@ func RunTimer() {
 	// 	}
 	// }
 
-	for timerRunning && timerDuration >= 0 {
+	for timerRunning && timerDuration > 0 {
 		// Send the remaining time to the UI
 		SendRemainingTime()
 
@@ -135,13 +138,11 @@ func RunTimer() {
 		fmt.Println("timerDuration 2:", timerDuration)
 		fmt.Println("-----------------------------------------------")
 
-		// js.Global().Call("updateMinutes", timerDuration.Seconds())
 		time.Sleep(1 * time.Second)
 	}
 
-	if !timerRunning {
-		// Timer paused or stopped
-		fmt.Println("Its herer")
+	if timerDuration == 0 {
+		timerRunning = false
 		SendRemainingTime()
 	}
 
@@ -178,12 +179,21 @@ func ResetTimer() js.Func {
 		timerRunning = false
 		timerDuration = 0
 		SendRemainingTime()
+		// SendResetMinutes()
 		return ""
 	})
 }
 
 func SendRemainingTime() {
 	js.Global().Call("updateRemainingTime", timerDuration.Seconds())
+}
+
+func SendMinutesTime() {
+	js.Global().Call("updateMinutesTime", timerDuration.Seconds())
+}
+
+func SendResetMinutes() {
+	js.Global().Call("resetMinutes", timerDuration.Seconds())
 }
 
 // func sendJSONResponse(data interface{}) string {

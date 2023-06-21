@@ -6,11 +6,18 @@ function updateRemainingTime(remaining) {
     remainingTimeElement.textContent = remaining;
 }
 
-function updateMinutes(minutes) {
+function updateMinutesTime(minutes) {
+    console.log("Script.js minutes ", minutes)
     if(minutes >= 1 && minutes <= 60 ) {
         const minutesElement = document.getElementById("duration");
         minutesElement.innerText = minutes
     }
+}
+
+function resetMinutes(minutes) {
+    const minutesElement = document.getElementById("duration");
+    console.log("minutes ", minutes)
+    minutesElement.innerText = minutes
 }
 
 WebAssembly.instantiateStreaming(fetch("main.wasm"), goWasm.importObject).then((result) => {
