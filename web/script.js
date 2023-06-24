@@ -1,13 +1,13 @@
 const goWasm = new Go()
 
 function updateRemainingTime(remaining) {
-    console.log("remainhg ", remaining)
+    // console.log("remainhg ", remaining)
     const remainingTimeElement = document.getElementById("remainingTime");
     remainingTimeElement.textContent = remaining;
 }
 
 function updateBreakRemainingTime(remaining) {
-    console.log("remainhg ", remaining)
+    // console.log("remainhg ", remaining)
     const remainingTimeElement = document.getElementById("breakRemainingTime");
     remainingTimeElement.textContent = remaining;
 }
