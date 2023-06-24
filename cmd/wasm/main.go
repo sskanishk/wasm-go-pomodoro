@@ -9,6 +9,7 @@ import (
 
 var timerDuration time.Duration
 var timerRunning bool
+var breakTimeDuration time.Duration
 
 var htmlString = `<h4>Hello, I'm an HTML snippet from Go!</h4>`
 
@@ -31,9 +32,33 @@ func AddMinutes() js.Func {
 
 func SubMinutes() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		fmt.Println("good Sub", breakTimeDuration)
 		if timerDuration > time.Duration(1)*time.Second {
 			timerDuration = timerDuration - time.Second
 			SendMinutesTime()
+		}
+		return nil
+	})
+}
+
+func BreakSubMinutes() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		fmt.Println("good ", breakTimeDuration)
+		if breakTimeDuration > time.Duration(1)*time.Second {
+			breakTimeDuration = breakTimeDuration - time.Second
+			js.Global().Call("updateBreakMinutesTime", breakTimeDuration.Seconds())
+		}
+		return nil
+	})
+}
+
+func BreakAddMinutes() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		fmt.Println("B Add", breakTimeDuration)
+		if breakTimeDuration < time.Duration(60)*time.Second {
+			breakTimeDuration = breakTimeDuration + time.Second
+			js.Global().Call("updateBreakMinutesTime", breakTimeDuration.Seconds())
+			// SendMinutesTime()
 		}
 		return nil
 	})
@@ -156,6 +181,7 @@ func RunTimer() {
 
 func SendRemainingTime() {
 	js.Global().Call("updateRemainingTime", formatDuration(timerDuration))
+	js.Global().Call("updateBreakRemainingTime", formatDuration(breakTimeDuration))
 }
 
 func SendMinutesTime() {
@@ -173,6 +199,8 @@ func RegisterCallbacks() {
 	js.Global().Set("resetTimer", ResetTimer())
 	js.Global().Set("addMinutes", AddMinutes())
 	js.Global().Set("subMinutes", SubMinutes())
+	js.Global().Set("breakAddMinutes", BreakAddMinutes())
+	js.Global().Set("breakSubMinutes", BreakSubMinutes())
 	js.Global().Set("getHtml", GetHtml())
 }
 
