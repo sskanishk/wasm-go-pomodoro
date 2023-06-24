@@ -118,8 +118,10 @@ func RunTimer() {
 		isSessionOn = !isSessionOn
 		SendRemainingTime()
 		if isSessionOn {
+			UpdateColor("session")
 			StartTimerGo(sessionTimeDurationValue)
 		} else if isBreakOn {
+			UpdateColor("break")
 			StartTimerGo(breakTimeDurationValue)
 		}
 	}
@@ -164,6 +166,10 @@ func formatDuration(d time.Duration) string {
 
 func SendRemainingTime() {
 	js.Global().Call("updateRunningTime", formatDuration(runningTimeDuration))
+}
+
+func UpdateColor(className string) {
+	js.Global().Call("updateBgColor", className)
 }
 
 func SendMinutesTime(operation string) {

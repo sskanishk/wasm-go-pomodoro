@@ -1,9 +1,14 @@
 const goWasm = new Go()
 
-function updateRunningTime(remaining) {
-    // console.log("remainhg ", remaining)
+function updateRunningTime(remaining, remainingTimeInMilliSec) {
     const runningTimeElement = document.getElementById("runningTime");
-    runningTimeElement.textContent = remaining;
+    runningTimeElement.textContent = remaining;    
+}
+
+function updateBgColor(className) {
+    const html = document.getElementsByTagName('html')
+    html[0].classList.remove(html[0].classList.item(0))
+    html[0].classList.add(className)
 }
 
 function updateDurationTime(minutes, operation) {
@@ -19,20 +24,6 @@ function updateDurationTime(minutes, operation) {
     }
 }
 
-function updateBreakMinutesTime(minutes) {
-    if (minutes >= 1 && minutes <= 60) {
-        const minutesElement = document.getElementById("breakDuration");
-        minutesElement.innerText = minutes
-    }
-}
-
-function updateMinutesTime(minutes) {
-    console.log("Script.js minutes ", minutes)
-    if (minutes >= 1 && minutes <= 60) {
-        const minutesElement = document.getElementById("sessionDuration");
-        minutesElement.innerText = minutes
-    }
-}
 
 function resetMinutes(minutes) {
     const minutesElement = document.getElementById("duration");
