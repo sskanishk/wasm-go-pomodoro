@@ -8,14 +8,16 @@ import (
 )
 
 var sessionTimeDuration time.Duration
-var timerRunning bool
+var timerRunning bool = false
 var breakTimeDuration time.Duration
 
 var sessionTimeDurationValue string
 var breakTimeDurationValue string
 
-var isSessionOn bool = false
-var isBreakOn bool = true
+var runningTimeDuration time.Duration
+
+var isSessionOn bool = true
+var isBreakOn bool = false
 
 var htmlString = `<h4>Hello, I'm an HTML snippet from Go!</h4>`
 
@@ -63,65 +65,38 @@ func ModifyTime() js.Func {
 
 func StartTimer() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		fmt.Println("starttimer ", sessionTimeDuration, timerRunning)
-
+		// fmt.Println("starttimer ", sessionTimeDuration, timerRunning)
 		var inputDuration string
-		sessionTimeDurationValue = js.Global().Get("document").Call("getElementById", "duration").Get("innerText").String()
+		sessionTimeDurationValue = js.Global().Get("document").Call("getElementById", "sessionDuration").Get("innerText").String()
 		breakTimeDurationValue = js.Global().Get("document").Call("getElementById", "breakDuration").Get("innerText").String()
+		timerRunning = true
 
 		if isSessionOn {
 			inputDuration = sessionTimeDurationValue
 		} else if isBreakOn {
 			inputDuration = breakTimeDurationValue
 		}
-
 		StartTimerGo(inputDuration)
-		// durationInt, err := strconv.Atoi(inputDuration)
-		// if err != nil {
-		// 	fmt.Println("Invalid duration:", inputDuration)
-		// 	return nil
-		// }
-
-		// // if timerRunning {
-		// // 	// in future will use as pause
-		// // 	return nil
-		// // }
-
-		// if isSessionOn {
-		// 	sessionTimeDuration = time.Duration(durationInt) * time.Minute
-		// 	timerRunning = true
-		// } else if isBreakOn {
-		// 	breakTimeDuration = time.Duration(durationInt) * time.Minute
-		// 	timerRunning = true
-		// }
-
-		// // Start the timer in a separate goroutine
-		// go RunTimer()
-
 		return nil
-
 	})
 }
 
 func StartTimerGo(inputDuration string) {
+
+	fmt.Println("Timmer Running ", timerRunning)
+
+	// in future will use as pause
+	if !timerRunning {
+		return
+	}
+
 	durationInt, err := strconv.Atoi(inputDuration)
 	if err != nil {
 		fmt.Println("Invalid duration:", inputDuration)
 		return
 	}
 
-	// if timerRunning {
-	// 	// in future will use as pause
-	// 	return nil
-	// }
-
-	if isSessionOn {
-		sessionTimeDuration = time.Duration(durationInt) * time.Second
-		timerRunning = true
-	} else if isBreakOn {
-		breakTimeDuration = time.Duration(durationInt) * time.Second
-		timerRunning = true
-	}
+	runningTimeDuration = time.Duration(durationInt) * time.Second
 
 	// Start the timer in a separate goroutine
 	go RunTimer()
@@ -132,51 +107,22 @@ func StartTimerGo(inputDuration string) {
 func RunTimer() {
 	fmt.Println("Inside issession of runtimer ", sessionTimeDuration, isBreakOn, isSessionOn)
 
-	if isSessionOn {
-		for timerRunning && sessionTimeDuration > 0 {
-			SendRemainingTime()
-			sessionTimeDuration -= 1 * time.Second
-			time.Sleep(1 * time.Second)
-		}
+	for timerRunning && runningTimeDuration > 0 {
+		SendRemainingTime()
+		runningTimeDuration -= 1 * time.Second
+		time.Sleep(1 * time.Second)
+	}
 
-		if sessionTimeDuration == 0 {
-			fmt.Println("line 110")
-			// timerRunning = false
-			isBreakOn = !isBreakOn
-			isSessionOn = !isSessionOn
-			SendRemainingTime()
+	if runningTimeDuration == 0 {
+		isBreakOn = !isBreakOn
+		isSessionOn = !isSessionOn
+		SendRemainingTime()
+		if isSessionOn {
 			StartTimerGo(sessionTimeDurationValue)
-		}
-	} else {
-		for timerRunning && breakTimeDuration > 0 {
-			SendRemainingTime()
-			breakTimeDuration -= 1 * time.Second
-			time.Sleep(1 * time.Second)
-		}
-
-		if breakTimeDuration == 0 {
-			fmt.Println("line 125")
-			// timerRunning = false
-			isBreakOn = !isBreakOn
-			isSessionOn = !isSessionOn
-			SendRemainingTime()
+		} else if isBreakOn {
 			StartTimerGo(breakTimeDurationValue)
 		}
 	}
-
-	// for timerRunning && sessionTimeDuration > 0 {
-	// 	SendRemainingTime()
-	// 	sessionTimeDuration -= 1 * time.Second
-	// 	time.Sleep(1 * time.Second)
-	// }
-
-	// if sessionTimeDuration == 0 {
-	// 	// timerRunning = false
-	// 	isBreakOn = !isBreakOn
-	// 	isSessionOn = !isSessionOn
-	// 	SendRemainingTime()
-	// 	StartTimer()
-	// }
 }
 
 func PauseTimer() js.Func {
@@ -184,7 +130,6 @@ func PauseTimer() js.Func {
 		if !timerRunning {
 			return nil
 		}
-
 		timerRunning = false
 		SendRemainingTime()
 		return nil
@@ -196,7 +141,6 @@ func ResumeTimer() js.Func {
 		if timerRunning {
 			return nil
 		}
-
 		timerRunning = true
 		go RunTimer()
 		return nil
@@ -206,7 +150,7 @@ func ResumeTimer() js.Func {
 func ResetTimer() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		timerRunning = false
-		sessionTimeDuration = 0
+		runningTimeDuration = 0
 		SendRemainingTime()
 		return nil
 	})
@@ -219,15 +163,14 @@ func formatDuration(d time.Duration) string {
 }
 
 func SendRemainingTime() {
-	js.Global().Call("updateRemainingTime", formatDuration(sessionTimeDuration))
-	js.Global().Call("updateBreakRemainingTime", formatDuration(breakTimeDuration))
+	js.Global().Call("updateRunningTime", formatDuration(runningTimeDuration))
 }
 
 func SendMinutesTime(operation string) {
 	if operation == "session" {
-		js.Global().Call("updateMinutesTime", sessionTimeDuration.Seconds())
+		js.Global().Call("updateDurationTime", sessionTimeDuration.Seconds(), "session")
 	} else if operation == "break" {
-		js.Global().Call("updateBreakMinutesTime", breakTimeDuration.Seconds())
+		js.Global().Call("updateDurationTime", breakTimeDuration.Seconds(), "break")
 	}
 }
 

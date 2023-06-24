@@ -10,13 +10,16 @@
     <h1>Hello WebAssembly</h1>
     <button id="get-html">Get HTML - Just testing out</button>
     <h1>Pomodoro Timer</h1>
-    <p>Session Time: <span id="remainingTime">--:--</span></p>
+    <span id="runningTime">--:--</span>
+    <br />
+    <p>Session Time: </p>
     <div>
         <button onclick="modifyTime('session', '-')">Sub Session</button>
-        <span id="duration" >0</span>
+        <span id="sessionDuration" >0</span>
         <button onclick="modifyTime('session', '+')">Add Session</button>
     </div>
-    <p>Break Time: <span id="breakRemainingTime">--:--</span></p>
+    <br />
+    <p>Break Time: </p>
     <div>
         <button onclick="modifyTime('break', '-')">Sub Break</button>
         <span id="breakDuration" >0</span>
