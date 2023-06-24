@@ -9,9 +9,9 @@ go should be installed and have stable version prefered go1.20.5
 ```
 git clone https://github.com/sskanishk/wasm-go-pomodoro.git
 
-// copy wasm_exec.js from where Go binaries is stored (for now repo contain this file)
+// copy wasm_exec.js from where Go binaries is stored
 cd web/
-cp "$(go env GROOT)\misc\wasm\wasm_exec.js" .
+cp "$(go env GOROOT)\misc\wasm\wasm_exec.js" .
 
 // go to wasm folder to create build
 cd cmd/wasm/
