@@ -6,6 +6,20 @@ function updateRemainingTime(remaining) {
     remainingTimeElement.textContent = remaining;
 }
 
+function updateBreakRemainingTime(remaining) {
+    console.log("remainhg ", remaining)
+    const remainingTimeElement = document.getElementById("breakRemainingTime");
+    remainingTimeElement.textContent = remaining;
+}
+
+function updateBreakMinutesTime(minutes) {
+    console.log("Script.js minutes ", minutes)
+    if (minutes >= 1 && minutes <= 60) {
+        const minutesElement = document.getElementById("breakDuration");
+        minutesElement.innerText = minutes
+    }
+}
+
 function updateMinutesTime(minutes) {
     console.log("Script.js minutes ", minutes)
     if (minutes >= 1 && minutes <= 60) {
