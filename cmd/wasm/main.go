@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var timerDuration time.Duration
+var sessionTimeDuration time.Duration
 var timerRunning bool
 var breakTimeDuration time.Duration
 
@@ -19,54 +19,45 @@ func GetHtml() js.Func {
 	})
 }
 
-func AddMinutes() js.Func {
+func ModifyTime() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		fmt.Println("timer 1", timerDuration)
-		if timerDuration < time.Duration(60)*time.Second {
-			timerDuration = timerDuration + time.Second
-			SendMinutesTime()
-		}
-		return nil
-	})
-}
 
-func SubMinutes() js.Func {
-	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		fmt.Println("good Sub", breakTimeDuration)
-		if timerDuration > time.Duration(1)*time.Second {
-			timerDuration = timerDuration - time.Second
-			SendMinutesTime()
+		if len(args) < 2 {
+			return nil
 		}
-		return nil
-	})
-}
 
-func BreakSubMinutes() js.Func {
-	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		fmt.Println("good ", breakTimeDuration)
-		if breakTimeDuration > time.Duration(1)*time.Second {
-			breakTimeDuration = breakTimeDuration - time.Second
-			js.Global().Call("updateBreakMinutesTime", breakTimeDuration.Seconds())
-		}
-		return nil
-	})
-}
+		operation := args[0].String()
+		operator := args[1].String()
 
-func BreakAddMinutes() js.Func {
-	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		fmt.Println("B Add", breakTimeDuration)
-		if breakTimeDuration < time.Duration(60)*time.Second {
-			breakTimeDuration = breakTimeDuration + time.Second
-			js.Global().Call("updateBreakMinutesTime", breakTimeDuration.Seconds())
-			// SendMinutesTime()
+		if operator == "+" {
+			if operation == "session" {
+				if sessionTimeDuration < time.Duration(60)*time.Second {
+					sessionTimeDuration = sessionTimeDuration + time.Second
+				}
+			} else if operation == "break" {
+				if breakTimeDuration < time.Duration(60)*time.Second {
+					breakTimeDuration = breakTimeDuration + time.Second
+				}
+			}
+		} else if operator == "-" {
+			if operation == "session" {
+				if sessionTimeDuration > time.Duration(1)*time.Second {
+					sessionTimeDuration = sessionTimeDuration - time.Second
+				}
+			} else if operation == "break" {
+				if breakTimeDuration > time.Duration(1)*time.Second {
+					breakTimeDuration = breakTimeDuration - time.Second
+				}
+			}
 		}
+		SendMinutesTime(operation)
 		return nil
 	})
 }
 
 func StartTimer() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		fmt.Println("starttimer ", timerDuration, timerRunning)
+		fmt.Println("starttimer ", sessionTimeDuration, timerRunning)
 
 		inputDuration := js.Global().Get("document").Call("getElementById", "duration").Get("innerText").String()
 		durationInt, err := strconv.Atoi(inputDuration)
@@ -79,7 +70,7 @@ func StartTimer() js.Func {
 			return nil
 		}
 
-		timerDuration = time.Duration(durationInt) * time.Minute
+		sessionTimeDuration = time.Duration(durationInt) * time.Minute
 		timerRunning = true
 
 		// Start the timer in a separate goroutine
@@ -117,7 +108,7 @@ func ResumeTimer() js.Func {
 func ResetTimer() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		timerRunning = false
-		timerDuration = 0
+		sessionTimeDuration = 0
 		SendRemainingTime()
 		return nil
 	})
@@ -143,13 +134,13 @@ func RunTimer() {
 	// 	SendRemainingTime()
 
 	// 	fmt.Println("-----------------------------------------------")
-	// 	fmt.Println("timerDuration 1", timerDuration)
+	// 	fmt.Println("sessionTimeDuration 1", sessionTimeDuration)
 	// 	fmt.Println("time.Second", time.Second)
-	// 	timerDuration -= 1 * time.Second
-	// 	fmt.Println("timerDuration 2", timerDuration)
+	// 	sessionTimeDuration -= 1 * time.Second
+	// 	fmt.Println("sessionTimeDuration 2", sessionTimeDuration)
 	// 	fmt.Println("-----------------------------------------------")
 
-	// 	if timerDuration <= 0 {
+	// 	if sessionTimeDuration <= 0 {
 	// 		// Timer completed, stop the timer
 	// 		timerRunning = false
 	// 		SendRemainingTime()
@@ -157,39 +148,43 @@ func RunTimer() {
 	// 	}
 	// }
 
-	for timerRunning && timerDuration > 0 {
+	for timerRunning && sessionTimeDuration > 0 {
 		SendRemainingTime()
 
 		// fmt.Println("-----------------------------------------------")
-		// fmt.Println("timerDuration 1:", timerDuration)
+		// fmt.Println("sessionTimeDuration 1:", sessionTimeDuration)
 		// fmt.Println("-----------------------------------------------")
 
-		timerDuration -= 1 * time.Second
+		sessionTimeDuration -= 1 * time.Second
 
 		// fmt.Println("-----------------------------------------------")
-		// fmt.Println("timerDuration 2:", timerDuration)
+		// fmt.Println("sessionTimeDuration 2:", sessionTimeDuration)
 		// fmt.Println("-----------------------------------------------")
 
 		time.Sleep(1 * time.Second)
 	}
 
-	if timerDuration == 0 {
+	if sessionTimeDuration == 0 {
 		timerRunning = false
 		SendRemainingTime()
 	}
 }
 
 func SendRemainingTime() {
-	js.Global().Call("updateRemainingTime", formatDuration(timerDuration))
+	js.Global().Call("updateRemainingTime", formatDuration(sessionTimeDuration))
 	js.Global().Call("updateBreakRemainingTime", formatDuration(breakTimeDuration))
 }
 
-func SendMinutesTime() {
-	js.Global().Call("updateMinutesTime", timerDuration.Seconds())
+func SendMinutesTime(operation string) {
+	if operation == "session" {
+		js.Global().Call("updateMinutesTime", sessionTimeDuration.Seconds())
+	} else if operation == "break" {
+		js.Global().Call("updateBreakMinutesTime", breakTimeDuration.Seconds())
+	}
 }
 
 func SendResetMinutes() {
-	js.Global().Call("resetMinutes", timerDuration.Seconds())
+	js.Global().Call("resetMinutes", sessionTimeDuration.Seconds())
 }
 
 func RegisterCallbacks() {
@@ -197,11 +192,8 @@ func RegisterCallbacks() {
 	js.Global().Set("pauseTimer", PauseTimer())
 	js.Global().Set("resumeTimer", ResumeTimer())
 	js.Global().Set("resetTimer", ResetTimer())
-	js.Global().Set("addMinutes", AddMinutes())
-	js.Global().Set("subMinutes", SubMinutes())
-	js.Global().Set("breakAddMinutes", BreakAddMinutes())
-	js.Global().Set("breakSubMinutes", BreakSubMinutes())
 	js.Global().Set("getHtml", GetHtml())
+	js.Global().Set("modifyTime", ModifyTime())
 }
 
 func main() {

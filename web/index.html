@@ -12,15 +12,15 @@
     <h1>Pomodoro Timer</h1>
     <p>Session Time: <span id="remainingTime">--:--</span></p>
     <div>
-        <button onclick="subMinutes()">Sub</button>
+        <button onclick="modifyTime('session', '-')">Sub Session</button>
         <span id="duration" >0</span>
-        <button onclick="addMinutes()">Add</button>
+        <button onclick="modifyTime('session', '+')">Add Session</button>
     </div>
     <p>Break Time: <span id="breakRemainingTime">--:--</span></p>
     <div>
-        <button onclick="breakSubMinutes()">Sub Break</button>
+        <button onclick="modifyTime('break', '-')">Sub Break</button>
         <span id="breakDuration" >0</span>
-        <button onclick="breakAddMinutes()">Add Break</button>
+        <button onclick="modifyTime('break', '+')">Add Break</button>
     </div>
     <button onclick="startTimer()">Start</button>
     <button onclick="pauseTimer()">Pause</button>
