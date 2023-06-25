@@ -7,9 +7,9 @@ import (
 	"time"
 )
 
-var sessionTimeDuration time.Duration
+var sessionTimeDuration time.Duration = time.Duration(1) * time.Second
 var timerRunning bool = false
-var breakTimeDuration time.Duration
+var breakTimeDuration time.Duration = time.Duration(1) * time.Second
 
 var sessionTimeDurationValue string
 var breakTimeDurationValue string
@@ -66,6 +66,11 @@ func ModifyTime() js.Func {
 func StartTimer() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		// fmt.Println("starttimer ", sessionTimeDuration, timerRunning)
+
+		if timerRunning {
+			return nil
+		}
+
 		var inputDuration string
 		sessionTimeDurationValue = js.Global().Get("document").Call("getElementById", "sessionDuration").Get("innerText").String()
 		breakTimeDurationValue = js.Global().Get("document").Call("getElementById", "breakDuration").Get("innerText").String()
@@ -96,7 +101,7 @@ func StartTimerGo(inputDuration string) {
 		return
 	}
 
-	runningTimeDuration = time.Duration(durationInt) * time.Second
+	runningTimeDuration = time.Duration(durationInt) * time.Minute
 
 	// Start the timer in a separate goroutine
 	go RunTimer()
