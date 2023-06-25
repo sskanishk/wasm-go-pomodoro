@@ -7,17 +7,12 @@ function updateRunningTime(remaining, remainingTimeInMilliSec) {
 
 function updateBgColor(className) {
     const html = document.getElementById('pomodoro')
-    console.log("html", html.classList, className)
-
     if(html.classList.length > 0) {
         html.classList.remove(html.classList?.item(0))
     }
     html.classList.add(className)
-
-
     const currentOperation = document.getElementById("runningOperation")
     currentOperation.innerText = className
-
 }
 
 function updateDurationTime(minutes, operation) {

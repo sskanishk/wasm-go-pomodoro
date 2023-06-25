@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello WebAssembly GoLang</title>
+    <title>WebAssembly GoLang</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Jura:wght@600&family=Montserrat:wght@600&family=Varela+Round&display=swap"
         rel="stylesheet">
@@ -12,15 +12,15 @@
 </head>
 <body>
     <div>
-        <h1>Hello WebAssembly & GoLang</h1>
-        <div id="pomodoro" class="default">
+        <h1>WebAssembly & GoLang</h1>
+        <div id="pomodoro" class="session">
             <h1>Pomodoro Timer</h1>
             <div class="ops_container">
                 <div class="ops_wrapper">
                     <p>Session Time</p>
                     <div class="ops_action">
                         <button onclick="modifyTime('session', '-')">-</button>
-                        <span id="sessionDuration">1</span>
+                        <p><span id="sessionDuration">1</span> Min</p>
                         <button onclick="modifyTime('session', '+')">+</button>
                     </div>
                 </div>
@@ -32,7 +32,7 @@
                     <p>Break Time</p>
                     <div class="ops_action">
                         <button onclick="modifyTime('break', '-')">-</button>
-                        <span id="breakDuration">1</span>
+                        <p><span id="breakDuration">1</span> Min</p>
                         <button onclick="modifyTime('break', '+')">+</button>
                     </div>
                 </div>

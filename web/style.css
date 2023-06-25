@@ -10,13 +10,14 @@
 }
 
 .session {
-    background-color: #0CC078
+    background-color: #6a4c93
     /* background-color: #79DE79 */
 }
 
 .break {
+    background-color: #0CC078
     /* background-color: #D63420; */
-    background-color: #FB6962;
+    /* background-color: #FB6962; */
 }
 
 
@@ -30,10 +31,6 @@
     /* background: #757F9A; */
     /* background: #182848; */
     /* background: linear-gradient(to right, #D7DDE8, #757F9A); */
-}
-
-.default {
-    background: #6a4c93;
 }
 
 #runningOperation {
