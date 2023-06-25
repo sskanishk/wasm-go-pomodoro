@@ -5,7 +5,7 @@ Pomodoro build in web assembly using go (golang)
 go should be installed and have stable version prefered go1.20.5
 
 
-### Setup
+### Setup (Windows)
 ```
 git clone https://github.com/sskanishk/wasm-go-pomodoro.git
 
@@ -24,3 +24,4 @@ go run main.go
 
 ### Ref
 https://youtu.be/10Mz3z-W1BE
+https://www.sitepen.com/blog/compiling-go-to-webassembly
