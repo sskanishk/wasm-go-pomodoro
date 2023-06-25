@@ -1,6 +1,9 @@
 # wasm-go-pomodoro
 Pomodoro build in web assembly using go (golang)
 
+![image](https://github.com/sskanishk/wasm-go-pomodoro/assets/29313203/9a3f9c7a-ab8b-47ad-a898-5b9afd04dbe0)
+
+
 ### Requirements
 go should be installed and have stable version prefered go1.20.5
 
