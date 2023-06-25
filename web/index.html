@@ -5,31 +5,51 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hello WebAssembly GoLang</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Jura:wght@600&family=Montserrat:wght@600&family=Varela+Round&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Hello WebAssembly</h1>
-    <button id="get-html">Get HTML - Just testing out</button>
-    <h1>Pomodoro Timer</h1>
-    <span id="runningTime">--:--</span>
-    <br />
-    <p>Session Time: </p>
     <div>
-        <button onclick="modifyTime('session', '-')">Sub Session</button>
-        <span id="sessionDuration" >0</span>
-        <button onclick="modifyTime('session', '+')">Add Session</button>
+        <h1>Hello WebAssembly & GoLang</h1>
+        <div id="pomodoro" class="default">
+            <h1>Pomodoro Timer</h1>
+            <div class="ops_container">
+                <div class="ops_wrapper">
+                    <p>Session Time</p>
+                    <div class="ops_action">
+                        <button onclick="modifyTime('session', '-')">-</button>
+                        <span id="sessionDuration">1</span>
+                        <button onclick="modifyTime('session', '+')">+</button>
+                    </div>
+                </div>
+                <div class="ops_wrapper">
+                    <p id="runningOperation">Session</p>
+                    <span id="runningTime">00:00</span>
+                </div>
+                <div class="ops_wrapper">
+                    <p>Break Time</p>
+                    <div class="ops_action">
+                        <button onclick="modifyTime('break', '-')">-</button>
+                        <span id="breakDuration">1</span>
+                        <button onclick="modifyTime('break', '+')">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="action_wrapper">
+                <div class="action_bar">
+                    <button onclick="startTimer()">Start</button>
+                    <button onclick="pauseTimer()">Pause</button>
+                    <button onclick="resumeTimer()">Resume</button>
+                    <button onclick="resetTimer()">Reset</button>
+                </div>
+            </div>
+        </div>
+        <div id="test_container">
+            <button id="get_html">Get HTML - Test it out</button>
+        </div>
     </div>
-    <br />
-    <p>Break Time: </p>
-    <div>
-        <button onclick="modifyTime('break', '-')">Sub Break</button>
-        <span id="breakDuration" >0</span>
-        <button onclick="modifyTime('break', '+')">Add Break</button>
-    </div>
-    <button onclick="startTimer()">Start</button>
-    <button onclick="pauseTimer()">Pause</button>
-    <button onclick="resumeTimer()">Resume</button>
-    <button onclick="resetTimer()">Reset</button>
     <script src="wasm_exec.js"></script>
     <script src="script.js"></script>
 </body>

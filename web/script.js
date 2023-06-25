@@ -6,9 +6,18 @@ function updateRunningTime(remaining, remainingTimeInMilliSec) {
 }
 
 function updateBgColor(className) {
-    const html = document.getElementsByTagName('html')
-    html[0].classList.remove(html[0].classList.item(0))
-    html[0].classList.add(className)
+    const html = document.getElementById('pomodoro')
+    console.log("html", html.classList, className)
+
+    if(html.classList.length > 0) {
+        html.classList.remove(html.classList?.item(0))
+    }
+    html.classList.add(className)
+
+
+    const currentOperation = document.getElementById("runningOperation")
+    currentOperation.innerText = className
+
 }
 
 function updateDurationTime(minutes, operation) {
@@ -33,7 +42,8 @@ function resetMinutes(minutes) {
 
 WebAssembly.instantiateStreaming(fetch("main.wasm"), goWasm.importObject).then((result) => {
     goWasm.run(result.instance)
-    document.getElementById("get-html").addEventListener("click", () => {
-        document.body.innerHTML += getHtml()
+    document.getElementById("get_html").addEventListener("click", () => {
+        const element = document.getElementById("test_container")
+        element.innerHTML += getHtml()
     })
 })

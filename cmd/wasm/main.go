@@ -19,7 +19,7 @@ var runningTimeDuration time.Duration
 var isSessionOn bool = true
 var isBreakOn bool = false
 
-var htmlString = `<h4>Hello, I'm an HTML snippet from Go!</h4>`
+var htmlString = `<p>Hello, I'm an HTML snippet from Go!</p>`
 
 func GetHtml() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
